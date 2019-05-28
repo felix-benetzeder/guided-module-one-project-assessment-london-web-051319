@@ -1,10 +1,13 @@
-require "pry"
-
-
 $prompt = TTY::Prompt.new
 
- def welcome
+
+def prewelcome
   $prompt.say("Welcome to Book Review!")
+  welcome
+end
+
+
+def welcome
   reply = $prompt.ask("Is this your first visit? (yes/no)")
   if reply == "yes"
     puts "Please register before using the database"
@@ -16,25 +19,33 @@ $prompt = TTY::Prompt.new
     puts "Please enter a valid answer"
     welcome
   end
- end
+end
 
  def registration
   $prompt.collect do
     name = key(:name).ask('Name?')
     username = key(:username).ask('Username?')
-    User.createUser(username: username, full_name: name)
-    $userobject = User.findUser(username)
-    puts "Welcome #{username}"
-    main_menu
+    newUser = User.createUser(username: username, full_name: name)
+    if newUser == "Error"
+      welcome
+    else
+      $userobject = User.findUser(username)
+      puts "Welcome #{username}"
+      main_menu
+    end
   end
  end
 
  def login
   username = $prompt.ask('What is your username?')
-  User.logIn(username: username)
-  $userobject = User.findUser(username)
-  puts "Welcome #{username}"
-  main_menu
+  indicator = User.logIn(username: username)
+  if indicator == "Success"
+    $userobject = User.findUser(username)
+    puts "Welcome #{username}"
+    main_menu
+  else
+    welcome
+  end
  end
 
  def main_menu

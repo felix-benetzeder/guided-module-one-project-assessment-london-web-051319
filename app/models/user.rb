@@ -4,7 +4,8 @@ class User < ActiveRecord::Base
 
   def self.createUser(username:, full_name:)
     if User.all.map(&:username).include?(username)
-      "This username is already taken - please select a different one"
+      puts "This username is already taken - please select a different one"
+      "Error"
     else
       User.create(username: username, full_name: full_name)
     end
@@ -13,9 +14,9 @@ class User < ActiveRecord::Base
   def self.logIn(username:)
     if User.all.map(&:username).include?(username)
       puts "Login successful"
+      "Success"
     else
       puts "This user does not exist, please enter a valid username"
-      welcome
     end
   end
 

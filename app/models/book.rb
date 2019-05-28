@@ -10,7 +10,7 @@ class Book < ActiveRecord::Base
     if reviews.count != 0
       (self.reviews.map(&:rating).sum.to_f / reviews.count).round(2)
     else
-      "There is no review for this book available"
+      "NA"
     end
   end
 
@@ -42,6 +42,20 @@ class Book < ActiveRecord::Base
     Book.all.select {|book| book.author == author}
   end
 
+  def self.lookForAuthor(author)
+    booksofAuthor(author).each {|book| puts "The book #{book.title} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+  end
+
+  def self.lookForBook(title)
+    book = Book.find_by_title(title)
+    puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."
+  end
+
+end
+  # def self.booksofAuthor(author)
+  #   Book.all.select {|book| book.author == author}
+  # end
+
   # def self.bestAuthor #add optional genre
   #
   # end
@@ -50,6 +64,3 @@ class Book < ActiveRecord::Base
   # def booksYouEnjoy(genre, author)
   #
   # end
-
-
-end

@@ -52,15 +52,3 @@ class Book < ActiveRecord::Base
   end
 
 end
-  # def self.booksofAuthor(author)
-  #   Book.all.select {|book| book.author == author}
-  # end
-
-  # def self.bestAuthor #add optional genre
-  #
-  # end
-  # ## Best Author with optional Genre
-  #
-  # def booksYouEnjoy(genre, author)
-  #
-  # end

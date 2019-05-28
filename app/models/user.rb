@@ -37,18 +37,39 @@ class User < ActiveRecord::Base
   end
 
   def createReview(description:, rating:, book:)
-    #get description rating and book from CLI
     bookID = Book.find_by_title(book).id
     Review.create(description: description, rating: rating, book_id: bookID, user_id: self.id, date: Date.today)
+    puts "Added review, please restart program to see changes"
   end
 
 
   def reviewContent # Shows review with book title and information
-    showReviews.map { |review| puts "#{review.book.title} - Your review was: #{review.description} and you rated the book with #{review.rating} stars."  }
+    showReviews.map { |review| puts "ID: #{review.id} - #{review.book.title} - Your review was: #{review.description} and you rated the book with #{review.rating} stars."  }
   end
 
   def showReviewContent #puts it to console
     reviewContent.each { |content| puts content  }
+  end
+
+  def editReview(id, string, stars)
+    if Review.all.find_by(id: id) == nil || self.username != Review.all.find_by(id: id).user.username
+      puts "Please only select valid ID numbers and reviews that you created yourself."
+    else
+      updatingReview = Review.all.find_by(id: id)
+      updatingReview.update(description: string)
+      updatingReview.update(rating: stars)
+      puts "Edited review, please restart program to see changes"
+    end
+  end
+
+  def deleteReview(id)
+    if Review.all.find_by(id: id) == nil || self.username != Review.all.find_by(id: id).user.username
+      puts "Please only select valid ID numbers and reviews that you created yourself."
+    else
+      deletingReview = Review.all.find_by(id: id)
+      deletingReview.destroy
+      puts "Deleted review, please restart program to see changes"
+    end
   end
 
 end

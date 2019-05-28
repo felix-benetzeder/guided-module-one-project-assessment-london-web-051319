@@ -24,12 +24,12 @@ ActiveRecord::Schema.define(version: 2019_05_27_105345) do
     t.integer "rating"
     t.integer "book_id"
     t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.date "date"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name"
+    t.string "username"
+    t.string "full_name"
   end
 
 end

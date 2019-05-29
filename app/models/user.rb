@@ -2,6 +2,30 @@ class User < ActiveRecord::Base
   has_many :reviews
   has_many :books, through: :reviews
 
+  def showReviews
+    self.reviews
+  end
+
+  def countReviews
+    showReviews.count
+  end
+
+  def self.mostActiveUser
+    self.all.max_by(&:countReviews)
+  end
+
+  def self.findUser(username)
+    User.find_by(username: username)
+  end
+
+  def reviewContent # Shows review with book title and information
+    showReviews.map { |review| puts "ID: #{review.id} - #{review.book.title} - Your review was: #{review.description} and you rated the book with #{review.rating} stars."  }
+  end
+
+  def showReviewContent #puts it to console
+    reviewContent.each { |content| puts content  }
+  end
+
   def self.createUser(username:, full_name:)
     if User.all.map(&:username).include?(username)
       puts "This username is already taken - please select a different one"
@@ -20,45 +44,20 @@ class User < ActiveRecord::Base
     end
   end
 
-  def self.findUser(username)
-    User.find_by(username: username)
-  end
-
-  def showReviews
-    self.reviews
-  end
-
-  def countReviews
-    showReviews.count
-  end
-
-  def self.mostActiveUser
-    self.all.max_by(&:countReviews)
-  end
-
-  def createReview(description:, rating:, book:)
-    bookID = Book.find_by_title(book).id
+  def createReview(description:, rating:, title:)
+    binding.pry
+    bookID = Book.find_by_title(title).id
     Review.create(description: description, rating: rating, book_id: bookID, user_id: self.id, date: Date.today)
-    puts "Added review, please restart program to see changes"
+    puts "Added review, thanks for your contribution"
   end
 
-
-  def reviewContent # Shows review with book title and information
-    showReviews.map { |review| puts "ID: #{review.id} - #{review.book.title} - Your review was: #{review.description} and you rated the book with #{review.rating} stars."  }
-  end
-
-  def showReviewContent #puts it to console
-    reviewContent.each { |content| puts content  }
-  end
-
-  def editReview(id, string, stars)
+  def editReview(id:, newDescription:, newRating:)
     if Review.all.find_by(id: id) == nil || self.username != Review.all.find_by(id: id).user.username
       puts "Please only select valid ID numbers and reviews that you created yourself."
     else
       updatingReview = Review.all.find_by(id: id)
-      updatingReview.update(description: string)
-      updatingReview.update(rating: stars)
-      puts "Edited review, please restart program to see changes"
+      updatingReview.update(description: newDescription, rating: newRating)
+      puts "Successfully edited Review, please restart to see changes."
     end
   end
 
@@ -68,7 +67,7 @@ class User < ActiveRecord::Base
     else
       deletingReview = Review.all.find_by(id: id)
       deletingReview.destroy
-      puts "Deleted review, please restart program to see changes"
+      puts "Successfully, deleted review"
     end
   end
 

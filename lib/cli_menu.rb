@@ -1,11 +1,9 @@
 $prompt = TTY::Prompt.new
-
+$caller = ""
 
 def prewelcome
   $prompt.say("Welcome to Book Review!")
-  welcome
 end
-
 
 def welcome
   reply = $prompt.ask("Is this your first visit? (yes/no)")
@@ -21,7 +19,7 @@ def welcome
   end
 end
 
- def registration
+def registration
   $prompt.collect do
     name = key(:name).ask('Name?')
     username = key(:username).ask('Username?')
@@ -34,9 +32,9 @@ end
       main_menu
     end
   end
- end
+end
 
- def login
+def login
   username = $prompt.ask('What is your username?')
   indicator = User.logIn(username: username)
   if indicator == "Success"
@@ -46,10 +44,10 @@ end
   else
     welcome
   end
- end
+end
 
- def main_menu
-  option = $prompt.select("What would you like to do today?", ["Submit review", "Read your reviews", "Search for book",  "Search for an author", "Exit"])
+def main_menu
+  option = $prompt.select("What would you like to do today?", ["Submit review", "Read your reviews", "Edit Review","Delete Review", "Search for book",  "Search for an author", "Exit"])
     if option == "Submit review"
       $prompt.collect do
         title = key(:title).ask('Title of the book')
@@ -62,6 +60,18 @@ end
     elsif option == "Read your reviews"
       $userobject.showReviewContent
       main_menu
+    elsif option == "Edit Review"
+      $userobject.showReviewContent
+      id = $prompt.ask("What is the ID of the review you want to change?")
+      string = $prompt.ask("What is the new description you want to assign?")
+      stars = $prompt.ask("What is the amended rating?") ### prompt.slider / 1-5?
+      $userobject.editReview(id,string,stars)
+      main_menu
+    elsif option == "Delete Review"
+      $userobject.showReviewContent
+      id = $prompt.ask("What is the ID of the review you want to change?")
+      $userobject.deleteReview(id)
+      main_menu
     elsif option == "Search for book"
       title = $prompt.ask("What is the title of the book?")
       Book.lookForBook(title)
@@ -72,6 +82,5 @@ end
       main_menu
     elsif option == "Exit"
       puts "Goodbye #{$userobject.username}!"
-      return
     end
  end

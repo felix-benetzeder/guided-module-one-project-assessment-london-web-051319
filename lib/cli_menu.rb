@@ -75,12 +75,12 @@ def main_menu
       $userobject.deleteReview(id)
       "main_menu"
     elsif option == "Search for book"
-      title = $prompt.ask("What is the title of the book?")
-      Book.lookForBook(title)
+      search_term = $prompt.ask("What is the title of the book?")
+      Book.search_book_title(search_term)
       "main_menu"
     elsif option == "Search for an author"
-      author = $prompt.ask("What is the name of the author?")
-      Book.lookForAuthor(author)
+      search_term = $prompt.ask("What is the name of the author?")
+      Book.search_for_author(search_term)
       "main_menu"
     elsif option == "Exit"
       puts "Goodbye #{$userobject.username}!"

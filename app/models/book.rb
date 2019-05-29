@@ -42,6 +42,14 @@ class Book < ActiveRecord::Base
     Book.all.select {|book| book.author == author}
   end
 
+  def self.search_book_title(search_term)
+    results = Book.all.where("lower(title) LIKE :search", search: "%#{search_term}%")
+  end
+
+  def self.search_for_author(search_term)
+    results = Book.all.where("lower(author) LIKE :search", search "%#{search_term}%")
+  end
+
   def self.lookForAuthor(author)
     booksofAuthor(author).each {|book| puts "The book #{book.title} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
   end

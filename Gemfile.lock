@@ -20,6 +20,7 @@ GEM
       i18n (>= 0.7)
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
+    json (2.2.0)
     method_source (0.9.2)
     minitest (5.11.3)
     mustermann (1.0.3)
@@ -61,6 +62,7 @@ PLATFORMS
 
 DEPENDENCIES
   faker
+  json
   pry
   require_all
   sinatra-activerecord

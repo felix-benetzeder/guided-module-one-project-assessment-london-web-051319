@@ -2,15 +2,9 @@ require_relative '../config/environment.rb'
 
 binding.pry
 prewelcome
-welcome
+action = welcome
 
-
-# loop do
-#
-#   outcome  = welcome
-#   break if outcome == "exit"
-#   skkasf
-#   daslasd
-#
-#
-# end
+loop do
+  action = send(action)
+  break if action == "End"
+end

@@ -47,7 +47,7 @@ def login
 end
 
 def main_menu
-  option = $prompt.select("What would you like to do today?", ["Submit review", "Read your reviews", "Edit Review","Delete Review", "Search for book",  "Search for an author", "Exit"])
+  option = $prompt.select("What would you like to do today?", ["Submit review", "Read your reviews", "Edit Review","Delete Review", "Search for book",  "Search for an author", "Search by genre", "Exit"])
     if option == "Submit review"
       newReview = $prompt.collect do
         key(:title).ask('Title of the book')
@@ -80,6 +80,10 @@ def main_menu
     elsif option == "Search for an author"
       search_term = $prompt.ask("What is the name of the author?")
       Book.search_for_author(search_term)
+      "main_menu"
+    elsif option == "Search by genre"
+      search_term = $prompt.ask("What is the genre?")
+      puts Book.search_by_genre(search_term.to_s)
       "main_menu"
     elsif option == "Exit"
       puts "Goodbye #{$userobject.username}!"

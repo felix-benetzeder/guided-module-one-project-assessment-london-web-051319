@@ -48,4 +48,8 @@ class Book < ActiveRecord::Base
     results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
   end
 
+  def self.search_by_genre(genre)
+    results = Book.all.where("lower(genre) LIKE :search", search: "%#{genre}%")
+  end
+
 end

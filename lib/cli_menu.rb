@@ -1,8 +1,8 @@
 $prompt = TTY::Prompt.new
+$caller = ""
 
 def prewelcome
   $prompt.say("Welcome to Book Review!")
-  welcome
 end
 
 def welcome

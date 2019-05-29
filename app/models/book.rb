@@ -32,31 +32,20 @@ class Book < ActiveRecord::Base
     genreFilter(genre).max_by(countOfRating) {|book| book.averageRating}
   end
 
-  def self.worstBook (genre)
+  def self.worstBook (genre = nil)
     lowestRating = averageRatingTotal(genre).min
     countOfRating = averageRatingTotal(genre).count(lowestRating)
     genreFilter(genre).min_by(countOfRating) {|book| book.averageRating}
   end
 
-  def self.booksofAuthor(author)
-    Book.all.select {|book| book.author == author}
-  end
-
   def self.search_book_title(search_term)
-    results = Book.all.where("lower(title) LIKE :search", search: "%#{search_term}%")
+    results =  Book.all.where("lower(title) LIKE :search", search: "%#{search_term}%")
+    results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
   end
 
   def self.search_for_author(search_term)
-    results = Book.all.where("lower(author) LIKE :search", search "%#{search_term}%")
-  end
-
-  def self.lookForAuthor(author)
-    booksofAuthor(author).each {|book| puts "The book #{book.title} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
-  end
-
-  def self.lookForBook(title)
-    book = Book.find_by_title(title)
-    puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."
+    results = Book.all.where("lower(author) LIKE :search", search: "%#{search_term}%")
+    results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
   end
 
 end

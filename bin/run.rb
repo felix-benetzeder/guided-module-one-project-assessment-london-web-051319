@@ -1,6 +1,6 @@
 require_relative '../config/environment.rb'
 
-binding.pry
+
 prewelcome
 action = welcome
 

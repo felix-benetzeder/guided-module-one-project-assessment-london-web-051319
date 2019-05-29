@@ -45,10 +45,13 @@ class User < ActiveRecord::Base
   end
 
   def createReview(description:, rating:, title:)
-    binding.pry
-    bookID = Book.find_by_title(title).id
-    Review.create(description: description, rating: rating, book_id: bookID, user_id: self.id, date: Date.today)
-    puts "Added review, thanks for your contribution"
+    if Book.find_by_title(title) == nil
+      puts "Please only select valid book titles or enter the book into the database"
+    else
+      bookID = Book.find_by_title(title).id
+      Review.create(description: description, rating: rating, book_id: bookID, user_id: self.id, date: Date.today)
+      puts "Added review, thanks for your contribution"
+    end
   end
 
   def editReview(id:, newDescription:, newRating:)

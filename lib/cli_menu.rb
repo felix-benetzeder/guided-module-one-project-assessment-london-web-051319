@@ -5,7 +5,7 @@ def prewelcome
 end
 
 def welcome
-  reply = $prompt.ask("Is this your first visit? (yes/no)")
+  reply = $prompt.select("Is this your first visit?", %w(yes no))
   if reply == "yes"
     puts "Please register before using the database"
     "registration"
@@ -28,7 +28,6 @@ def registration
   if newUser == "Error"
     "welcome"
   else
-    binding.pry
     $userobject = User.findUser(username)
     puts "Welcome #{username}"
     "main_menu"
@@ -57,7 +56,7 @@ def main_menu
       end
       $userobject.createReview(newReview)
       "main_menu"
-      elsif option == "Read your reviews"
+    elsif option == "Read your reviews"
       $userobject.showReviewContent
       "main_menu"
     elsif option == "Edit Review"

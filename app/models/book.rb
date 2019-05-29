@@ -7,15 +7,11 @@ class Book < ActiveRecord::Base
   end
 
   def averageRating
-    if reviews.count != 0
-      (self.reviews.map(&:rating).sum.to_f / reviews.count).round(2)
-    else
-      "NA"
-    end
+    self.reviews.average("rating")
   end
 
   def self.ignoreNil # This method rejects books without reviews
-    Book.all.reject{|book| book.reviewCount == 0}
+    Book.all.reject{|book| book.averageRating == nil}
   end
 
   def self.genreFilter(genre = nil)
@@ -26,15 +22,19 @@ class Book < ActiveRecord::Base
     end
   end
 
-  def self.bestBook (genre)
-    highestRating = genreFilter(genre).map {|book| book.averageRating}.max
-    countOfRating = genreFilter(genre).map {|book| book.averageRating}.count(highestRating)
+  def self.averageRatingTotal(genre = nil)
+    genreFilter(genre).map {|book| book.averageRating}
+  end
+
+  def self.bestBook (genre = nil)
+    highestRating = averageRatingTotal(genre).max
+    countOfRating = averageRatingTotal(genre).count(highestRating)
     genreFilter(genre).max_by(countOfRating) {|book| book.averageRating}
   end
 
   def self.worstBook (genre)
-    lowestRating = genreFilter(genre).map {|book| book.averageRating}.min
-    countOfRating = genreFilter(genre).map {|book| book.averageRating}.count(lowestRating)
+    lowestRating = averageRatingTotal(genre).min
+    countOfRating = averageRatingTotal(genre).count(lowestRating)
     genreFilter(genre).min_by(countOfRating) {|book| book.averageRating}
   end
 

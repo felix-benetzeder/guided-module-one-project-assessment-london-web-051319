@@ -1,6 +1,5 @@
 $prompt = TTY::Prompt.new
 
-
 def prewelcome
   $prompt.say("Welcome to Book Review!")
 end
@@ -114,8 +113,6 @@ def add_book
   end
 end
 
-
-
 def selected_book_menu
   option = $prompt.select("What would you like to do?", ["Submit a review", "Read reviews", "Back to search menu"])
   if option == "Read reviews"
@@ -140,18 +137,20 @@ def user_review_menu
     $userobject.showReviewContent
     "main_menu"
   elsif option == "Edit a review"
-    $userobject.showReviewContent
+    review = $userobject.showReviews
+    response = $prompt.select("Which review would you like to delete?", review.map(&:reviewsDisplayed))
     editedReview = $prompt.collect do
-      key(:id).ask("What is the ID of the review you want to change?")
       key(:newDescription).ask("What is the new description you want to assign?")
       key(:newRating).select("What is the amended rating (1-5)?", %w(1 2 3 4 5), convert: :int)
     end
+    editedReview[:id] = response.split("\n")[0].to_i
+    binding.pry
     $userobject.editReview(editedReview)
     "main_menu"
   elsif option == "Delete a review"
-    reviews = $userobject.showReviewContent
-    response = $prompt.select("What is the ID of the review you want to change?")
-    $userobject.deleteReview(id)
+    review = $userobject.showReviews
+    response = $prompt.select("Which review would you like to delete?", review.map(&:reviewsDisplayed))
+    $userobject.deleteReview(response.split("\n")[0].to_i)
     "main_menu"
   elsif option == "Back to main menu"
     "main_menu"

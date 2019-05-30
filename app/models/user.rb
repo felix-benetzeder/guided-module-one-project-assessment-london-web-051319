@@ -45,8 +45,8 @@ class User < ActiveRecord::Base
   end
 
   def createReview(description:, rating:, title:)
-    if Book.find_by_title(title) == nil
-      puts "Please only select valid book titles or enter the book into the database"
+    if Book.find_by_title(title) == nil || description == nil
+      puts "Please only select valid book titles and enter a description"
     else
       book_to_be_reviewed = Book.find_by_title(title)
       bookID = book_to_be_reviewed.id
@@ -71,12 +71,11 @@ class User < ActiveRecord::Base
     else
       deletingReview = Review.all.find_by(id: id)
       deletingReview.destroy
-      puts "Successfully, deleted review"
+      puts "Successfully deleted review"
     end
   end
 
   def self.createBook(title:, author:, genre:, pages:)
-    binding.pry
     if Book.all.map(&:title).include?(title) || title == nil || author == nil || genre == nil || pages == nil
       puts "Please enter a valid value or unique title"
     else

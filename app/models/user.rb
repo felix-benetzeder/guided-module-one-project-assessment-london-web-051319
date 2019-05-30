@@ -27,8 +27,8 @@ class User < ActiveRecord::Base
   end
 
   def self.createUser(username:, full_name:)
-    if User.all.map(&:username).include?(username)
-      puts "This username is already taken - please select a different one"
+    if User.all.map(&:username).include?(username) || username == nil || full_name == nil
+      puts "This username is already taken or invalid - please select a different one"
       "Error"
     else
       User.create(username: username, full_name: full_name)

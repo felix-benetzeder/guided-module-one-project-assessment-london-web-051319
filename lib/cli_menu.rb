@@ -1,19 +1,20 @@
 $prompt = TTY::Prompt.new
 
+
 def prewelcome
   $prompt.say("Welcome to Book Review!")
 end
 
 def welcome
-  reply = $prompt.select("Is this your first visit?", %w(yes no))
-  if reply == "yes"
+  reply = $prompt.select("Do you already have an account?", %w(Login Register))
+  if reply == "Register"
     puts "Please register before using the database"
     "registration"
-  elsif reply == "no"
+  elsif reply == "Login"
     puts "Welcome back, please enter your username"
     "login"
   else
-    puts "Please enter a valid answer"
+    $prompt.error("Please enter a valid answer")
     "welcome"
   end
 end
@@ -48,48 +49,111 @@ def login
 end
 
 def main_menu
-
-  option = $prompt.select("What would you like to do today?", ["Submit review", "Read your reviews", "Edit Review","Delete Review", "Search for book",  "Search for an author", "Search by genre", "Exit"])
-    if option == "Submit review"
-      newReview = $prompt.collect do
-        key(:title).ask('Title of the book')
-        key(:description).ask('What is your opinion?')
-        # key(:rating).slider('How do you rate it?', max: 5, step: 0.5)
-        key(:rating).select("What is your rating (1-5)?", %w(1 2 3 4 5), convert: :int)
-      end
-      $userobject.createReview(newReview)
-      "main_menu"
-    elsif option == "Read your reviews"
-      $userobject.showReviewContent
-      "main_menu"
-    elsif option == "Edit Review"
-      $userobject.showReviewContent
-      editedReview = $prompt.collect do
-        key(:id).ask("What is the ID of the review you want to change?")
-        key(:newDescription).ask("What is the new description you want to assign?")
-        key(:newRating).select("What is the amended rating (1-5)?", %w(1 2 3 4 5), convert: :int)
-      end
-      $userobject.editReview(editedReview)
-      "main_menu"
-    elsif option == "Delete Review"
-      $userobject.showReviewContent
-      id = $prompt.ask("What is the ID of the review you want to change?")
-      $userobject.deleteReview(id)
-      "main_menu"
-    elsif option == "Search for book"
-      search_term = $prompt.ask("What is the title of the book?")
-      Book.search_book_title(search_term)
-      "main_menu"
-    elsif option == "Search for an author"
-      search_term = $prompt.ask("What is the name of the author?")
-      Book.search_for_author(search_term)
-      "main_menu"
-    elsif option == "Search by genre"
-      search_term = $prompt.ask("What is the genre?")
-      Book.search_by_genre(search_term.to_s)
-      "main_menu"
+  option = $prompt.select("What would you like to do today?", ["Search","My Reviews", "Exit"])
+    if option == "Search"
+      "search_menu"
+    elsif option == "My Reviews"
+      "user_review_menu"
     elsif option == "Exit"
       puts "Goodbye #{$userobject.username}!"
       "End"
     end
- end
+  end
+
+def search_menu
+  option = $prompt.select("How do you want to search?", ["Search for book", "Search for an author", "Search by genre", "Back to main menu"])
+  if option == "Search for book"
+    search_term = $prompt.ask("What is the title of the book?")
+    results = Book.search_book_title(search_term)
+    if results == "Error"
+      $prompt.say("Would you like to add a book?")
+      return "add_book"
+    end
+    $selected_book = $prompt.select("Please select a book to see or write reviews for", results.map(&:title))
+    "selected_book_menu"
+  elsif option == "Search for an author"
+    search_term = $prompt.ask("What is the name of the author?")
+    results = Book.search_for_author(search_term)
+    if results == "Error"
+      $prompt.say("Would you like to add a book written by this author?")
+      return "add_book"
+    end
+    selected_author = $prompt.select("Please select an author", results.map(&:author).uniq)
+    results = Book.all.select {|book| book.author == selected_author}
+    $selected_book = $prompt.select("Please select a book to see or write reviews for", results.map(&:title))
+    "selected_book_menu"
+  elsif option == "Search by genre"
+    search_term = $prompt.ask("What is the genre?")
+    results = Book.search_by_genre(search_term)
+    if results == "Error"
+      $prompt.say("Would you like to add a book for that genre?")
+      return "add_book"
+    end
+    selected_genre = $prompt.select("Please select a genre", results.map(&:genre).uniq)
+    results = Book.all.select {|book| book.genre == selected_genre}
+    $selected_book = $prompt.select("Please select a book to see or write reviews for", results.map(&:title))
+    "selected_book_menu"
+  elsif option == "Back to main menu"
+    "main_menu"
+  end
+end
+
+def add_book
+  option = $prompt.select("Please select an option", ["Add book", "Back to main menu"])
+  if option == "Add book"
+    name = $prompt.collect do
+      key(:title).ask('title?')
+      key(:author).ask('author?')
+      key(:genre).ask("genre?")
+      key(:pages).ask("pages?")
+    end
+    User.createBook(name)
+    "main_menu"
+  elsif option == "Back to main menu"
+    "main_menu"
+  end
+end
+
+
+
+def selected_book_menu
+  option = $prompt.select("What would you like to do?", ["Submit a review", "Read reviews", "Back to search menu"])
+  if option == "Read reviews"
+    Book.findByTitle($selected_book).showReviewContent
+    "selected_book_menu"
+  elsif option == "Submit a review"
+    newReview = $prompt.collect do
+      key(:description).ask('What is your opinion?')
+      key(:rating).select("What is your rating (1-5)?", %w(1 2 3 4 5), convert: :int)
+    end
+    newReview[:title] = $selected_book
+    $userobject.createReview(newReview)
+    "selected_book_menu"
+  elsif option == "Back to search menu"
+    "search_menu"
+  end
+end
+
+def user_review_menu
+  option = $prompt.select("What would you like to do?", ["Read my reviews", "Edit a review", "Delete a review", "Back to main menu"])
+  if option == "Read my reviews"
+    $userobject.showReviewContent
+    "main_menu"
+  elsif option == "Edit a review"
+    $userobject.showReviewContent
+    editedReview = $prompt.collect do
+      key(:id).ask("What is the ID of the review you want to change?")
+      key(:newDescription).ask("What is the new description you want to assign?")
+      key(:newRating).select("What is the amended rating (1-5)?", %w(1 2 3 4 5), convert: :int)
+    end
+    $userobject.editReview(editedReview)
+    "main_menu"
+  elsif option == "Delete a review"
+    reviews = $userobject.showReviewContent
+    response = $prompt.select("What is the ID of the review you want to change?")
+    $userobject.deleteReview(id)
+    "main_menu"
+  elsif option == "Back to main menu"
+    "main_menu"
+  end
+end

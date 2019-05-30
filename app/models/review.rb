@@ -5,4 +5,5 @@ class Review < ActiveRecord::Base
   def self.latestReviews #Shows reviews within the last 30 days
     Review.all.select {|review| (Date.today - review.date).to_i <= 30}
   end
+  
 end

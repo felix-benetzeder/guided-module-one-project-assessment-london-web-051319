@@ -7,7 +7,34 @@ class Book < ActiveRecord::Base
   end
 
   def averageRating
-    self.reviews.average("rating")
+    if reviews.count != 0
+      (self.reviews.map(&:rating).sum.to_f / reviews.count).round(2)
+    else
+      "NA"
+    end
+  end
+
+  def print_stars(quantity)
+    @quantity = quantity
+    difference = @quantity.to_f - @quantity.to_i
+    difference = difference.to_f.round(2)
+    @quantity.to_i.times{ print "\u{2B50} "}
+    if difference > 0 && difference <= 0.25
+      fraction = "1/4"
+      puts fraction
+    elsif difference > 0.26 && difference <= 0.34
+      fraction = "1/3"
+      puts fraction
+    elsif difference > 0.35 && difference <= 0.5
+      fraction = "1/2"
+      puts fraction
+    elsif difference > 0.5 && difference <= 0.67
+      fraction = "2/3"
+      puts fraction
+    elsif difference > 0.68 && difference <= 0.75
+      fraction = "3/4"
+      puts fraction
+    end
   end
 
   def self.ignoreNil # This method rejects books without reviews
@@ -50,6 +77,7 @@ class Book < ActiveRecord::Base
 
   def self.search_by_genre(genre)
     results = Book.all.where("lower(genre) LIKE :search", search: "%#{genre}%")
+    results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
   end
 
 end

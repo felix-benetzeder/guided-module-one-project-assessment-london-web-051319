@@ -40,6 +40,7 @@ def login
   if indicator == "Success"
     $userobject = User.findUser(username)
     puts "Welcome #{username}"
+    $userobject
     "main_menu"
   else
     "welcome"
@@ -47,11 +48,13 @@ def login
 end
 
 def main_menu
+
   option = $prompt.select("What would you like to do today?", ["Submit review", "Read your reviews", "Edit Review","Delete Review", "Search for book",  "Search for an author", "Search by genre", "Exit"])
     if option == "Submit review"
       newReview = $prompt.collect do
         key(:title).ask('Title of the book')
         key(:description).ask('What is your opinion?')
+        # key(:rating).slider('How do you rate it?', max: 5, step: 0.5)
         key(:rating).select("What is your rating (1-5)?", %w(1 2 3 4 5), convert: :int)
       end
       $userobject.createReview(newReview)
@@ -83,7 +86,7 @@ def main_menu
       "main_menu"
     elsif option == "Search by genre"
       search_term = $prompt.ask("What is the genre?")
-      puts Book.search_by_genre(search_term.to_s)
+      Book.search_by_genre(search_term.to_s)
       "main_menu"
     elsif option == "Exit"
       puts "Goodbye #{$userobject.username}!"

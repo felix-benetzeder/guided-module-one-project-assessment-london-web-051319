@@ -48,8 +48,9 @@ class User < ActiveRecord::Base
     if Book.find_by_title(title) == nil
       puts "Please only select valid book titles or enter the book into the database"
     else
-      bookID = Book.find_by_title(title).id
-      Review.create(description: description, rating: rating, book_id: bookID, user_id: self.id, date: Date.today)
+      book_to_be_reviewed = Book.find_by_title(title)
+      bookID = book_to_be_reviewed.id
+      new_rating = Review.create(description: description, rating: rating, book_id: bookID, user_id: self.id, date: Date.today)
       puts "Added review, thanks for your contribution"
     end
   end

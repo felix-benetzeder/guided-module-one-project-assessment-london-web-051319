@@ -67,17 +67,29 @@ class Book < ActiveRecord::Base
 
   def self.search_book_title(search_term)
     results =  Book.all.where("lower(title) LIKE :search", search: "%#{search_term}%")
-    results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+    if results.size >= 1
+      results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+    else
+      $prompt.error("That book does appear to exist here yet")
+    end
   end
 
   def self.search_for_author(search_term)
     results = Book.all.where("lower(author) LIKE :search", search: "%#{search_term}%")
-    results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+    if results.size >= 1
+      results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+    else
+      $prompt.error("There doesn't appear to be any books by #{search_term} here yet")
+    end
   end
 
   def self.search_by_genre(genre)
     results = Book.all.where("lower(genre) LIKE :search", search: "%#{genre}%")
-    results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+    if results.size >= 1
+      results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+    else
+      $prompt.error("There doesn't appear to be any books in that genre yet")
+    end
   end
 
 end

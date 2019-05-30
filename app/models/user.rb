@@ -75,4 +75,19 @@ class User < ActiveRecord::Base
     end
   end
 
+  def createBook(title:, author:, genre:, pages:)
+    if Book.all.map(&:title).include?(title) || title == nil || author == nil || genre == nil || pages == nil
+      puts "Please enter a valid value or unique title"
+    else
+      Book.create(title: title, author: author, genre: genre, pages: pages)
+    end
+  end
+
+  # name = $prompt.collect do
+  #   key(:title).ask('title?')
+  #   key(:author).ask('author?')
+  #   key(:genre).ask("genre?")
+  #   key(:pages).ask("pages?")
+  # end
+
 end

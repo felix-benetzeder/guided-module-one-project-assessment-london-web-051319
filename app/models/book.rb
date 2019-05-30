@@ -6,6 +6,18 @@ class Book < ActiveRecord::Base
     self.reviews.count
   end
 
+  def self.findByTitle(title)
+    Book.find_by(title: title)
+  end
+
+  def self.findByAuthor(author)
+    Book.find_by(author: author)
+  end
+
+  def self.findByGenre(genre)
+    Book.find_by(genre: genre)
+  end
+
   def averageRating
     if reviews.count != 0
       (self.reviews.map(&:rating).sum.to_f / reviews.count).round(2)
@@ -71,6 +83,7 @@ class Book < ActiveRecord::Base
       results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
     else
       $prompt.error("That book does appear to exist here yet")
+      "Error"
     end
   end
 
@@ -80,6 +93,7 @@ class Book < ActiveRecord::Base
       results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
     else
       $prompt.error("There doesn't appear to be any books by #{search_term} here yet")
+      "Error"
     end
   end
 
@@ -89,7 +103,16 @@ class Book < ActiveRecord::Base
       results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
     else
       $prompt.error("There doesn't appear to be any books in that genre yet")
+      "Error"
     end
+  end
+
+  def reviewContent # Shows review with book title and information
+    self.reviews.map { |review| puts "Description: #{review.description} - The book was rated with #{review.rating} stars."  }
+  end
+
+  def showReviewContent #puts it to console
+    reviewContent.each { |content| puts content  }
   end
 
 end

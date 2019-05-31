@@ -123,10 +123,12 @@ def selected_book_menu
   elsif option == "Submit a review"
     newReview = $prompt.collect do
       key(:description).ask('What is your opinion?')
-      key(:rating).select("What is your rating (1-5)?", %w(1 2 3 4 5), convert: :int)
+      # key(:rating).select("What is your rating (1-5)?", %w(1 2 3 4 5), convert: :int)
     end
+    newReview[:rating] = $prompt.slider("What is your rating", max: 5, step: 0.5).to_f
     newReview[:title] = $selected_book
     $userobject.createReview(newReview)
+
     "selected_book_menu"
   elsif option == "Back to search menu"
     "search_menu"
@@ -154,8 +156,9 @@ def user_review_menu
     end
     editedReview = $prompt.collect do
       key(:newDescription).ask("What is the new description you want to assign?")
-      key(:newRating).select("What is the amended rating (1-5)?", %w(1 2 3 4 5), convert: :int)
+      # key(:newRating).select("What is the amended rating (1-5)?", %w(1 2 3 4 5), convert: :int)
     end
+    editedReview[:newRating] = $prompt.slider("What is the amended rating", max: 5, step: 0.5).to_f
     editedReview[:id] = response.split("\n")[0].to_i
     $userobject.editReview(editedReview)
     "main_menu"

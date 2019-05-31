@@ -6,9 +6,6 @@ class Review < ActiveRecord::Base
     Review.all.select {|review| (Date.today - review.date).to_i <= 30}
   end
 
-  def self.display_book_info
-  end
-
   def reviewsDisplayed
      "#{self.id}\nBook Name: #{self.book.title}\nAuthor Name: #{self.book.author}\nRating: #{self.rating}\nDescription: #{self.description}.\n_______________________________"
   end

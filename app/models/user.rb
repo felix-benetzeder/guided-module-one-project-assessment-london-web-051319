@@ -1,7 +1,10 @@
 class User < ActiveRecord::Base
   has_many :reviews
   has_many :books, through: :reviews
-
+  def rating
+    self.rating.to_f
+  end
+  
   def showReviews
     self.reviews
   end
@@ -19,7 +22,11 @@ class User < ActiveRecord::Base
   end
 
   def reviewContent # Shows review with book title and information
-    showReviews.map { |review| puts "ID: #{review.id} - #{review.book.title} - Your review was: #{review.description} and you rated the book with #{review.rating} stars."  }
+    showReviews.map { |review| 
+    puts "ID: #{review.id} - #{review.book.title}  by #{review.book.author}"
+    puts "Your review was: #{review.description}" 
+    puts "#{review.book.print_stars(review.rating)} - You rated it #{review.rating} stars."
+  puts "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  " }
   end
 
   def showReviewContent #puts it to console

@@ -6,6 +6,18 @@ class Book < ActiveRecord::Base
     self.reviews.count
   end
 
+  def self.findByTitle(title)
+    Book.find_by(title: title)
+  end
+
+  def self.findByAuthor(author)
+    Book.find_by(author: author)
+  end
+
+  def self.findByGenre(genre)
+    Book.find_by(genre: genre)
+  end
+
   def averageRating
     if reviews.count != 0
       (self.reviews.map(&:rating).sum.to_f / reviews.count).round(2)
@@ -14,8 +26,31 @@ class Book < ActiveRecord::Base
     end
   end
 
+  def print_stars(quantity)
+    @quantity = quantity
+    difference = @quantity.to_f - @quantity.to_i
+    difference = difference.to_f.round(2)
+    @quantity.to_i.times{ print "\u{2B50} "}
+    if difference > 0 && difference <= 0.25
+      fraction = "1/4"
+      puts fraction
+    elsif difference > 0.26 && difference <= 0.34
+      fraction = "1/3"
+      puts fraction
+    elsif difference > 0.35 && difference <= 0.5
+      fraction = "1/2"
+      puts fraction
+    elsif difference > 0.5 && difference <= 0.67
+      fraction = "2/3"
+      puts fraction
+    elsif difference > 0.68 && difference <= 0.75
+      fraction = "3/4"
+      puts fraction
+    end
+  end
+
   def self.ignoreNil # This method rejects books without reviews
-    Book.all.reject{|book| book.reviewCount == 0}
+    Book.all.reject{|book| book.averageRating == nil}
   end
 
   def self.genreFilter(genre = nil)
@@ -26,29 +61,58 @@ class Book < ActiveRecord::Base
     end
   end
 
-  def self.bestBook (genre)
-    highestRating = genreFilter(genre).map {|book| book.averageRating}.max
-    countOfRating = genreFilter(genre).map {|book| book.averageRating}.count(highestRating)
+  def self.averageRatingTotal(genre = nil)
+    genreFilter(genre).map {|book| book.averageRating}
+  end
+
+  def self.bestBook (genre = nil)
+    highestRating = averageRatingTotal(genre).max
+    countOfRating = averageRatingTotal(genre).count(highestRating)
     genreFilter(genre).max_by(countOfRating) {|book| book.averageRating}
   end
 
-  def self.worstBook (genre)
-    lowestRating = genreFilter(genre).map {|book| book.averageRating}.min
-    countOfRating = genreFilter(genre).map {|book| book.averageRating}.count(lowestRating)
+  def self.worstBook (genre = nil)
+    lowestRating = averageRatingTotal(genre).min
+    countOfRating = averageRatingTotal(genre).count(lowestRating)
     genreFilter(genre).min_by(countOfRating) {|book| book.averageRating}
   end
 
-  def self.booksofAuthor(author)
-    Book.all.select {|book| book.author == author}
+  def self.search_book_title(search_term)
+    results =  Book.all.where("lower(title) LIKE :search", search: "%#{search_term}%")
+    if results.size >= 1
+      results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+    else
+      $prompt.error("That book does appear to exist here yet")
+      "Error"
+    end
   end
 
-  def self.lookForAuthor(author)
-    booksofAuthor(author).each {|book| puts "The book #{book.title} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+  def self.search_for_author(search_term)
+    results = Book.all.where("lower(author) LIKE :search", search: "%#{search_term}%")
+    if results.size >= 1
+      results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+    else
+      $prompt.error("There doesn't appear to be any books by #{search_term} here yet")
+      "Error"
+    end
   end
 
-  def self.lookForBook(title)
-    book = Book.find_by_title(title)
-    puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."
+  def self.search_by_genre(genre)
+    results = Book.all.where("lower(genre) LIKE :search", search: "%#{genre}%")
+    if results.size >= 1
+      results.each {|book| puts "The book #{book.title} written by #{book.author} has #{book.reviewCount} reviews and is rated with #{book.averageRating} on average."}
+    else
+      $prompt.error("There doesn't appear to be any books in that genre yet")
+      "Error"
+    end
+  end
+
+  def reviewContent # Shows review with book title and information
+    self.reviews.map { |review| puts "Description: #{review.description} - The book was rated with #{review.rating} stars."  }
+  end
+
+  def showReviewContent #puts it to console
+    reviewContent.each { |content| puts content  }
   end
 
 end

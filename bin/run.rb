@@ -1,14 +1,10 @@
 require_relative '../config/environment.rb'
 
-prewelcome
-welcome
 
-# loop do
-#
-#   outcome  = welcome
-#   break if outcome == "exit"
-#   skkasf
-#   daslasd
-#
-#
-# end
+prewelcome
+action = welcome
+
+loop do
+  action = send(action)
+  break if action == "End"
+end

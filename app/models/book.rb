@@ -107,8 +107,12 @@ class Book < ActiveRecord::Base
     end
   end
 
+
   def reviewContent # Shows review with book title and information
-    self.reviews.map { |review| puts "Description: #{review.description} - The book was rated with #{review.rating} stars."  }
+    self.reviews.map { |review| 
+    puts "Description: #{review.description}" 
+    puts "#{review.book.print_stars(review.rating)} - rated #{review.rating} stars."
+  puts "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  " }
   end
 
   def showReviewContent #puts it to console

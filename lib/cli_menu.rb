@@ -1,6 +1,7 @@
 $prompt = TTY::Prompt.new
 
 def prewelcome
+  system "clear"
   $prompt.say("Welcome to Book Review!")
 end
 
@@ -60,6 +61,7 @@ def main_menu
   end
 
 def search_menu
+  system "clear"
   option = $prompt.select("How do you want to search?", ["Search for book", "Search for an author", "Search by genre", "Back to main menu"])
   if option == "Search for book"
     search_term = $prompt.ask("What is the title of the book?")
@@ -134,22 +136,39 @@ end
 def user_review_menu
   option = $prompt.select("What would you like to do?", ["Read my reviews", "Edit a review", "Delete a review", "Back to main menu"])
   if option == "Read my reviews"
-    $userobject.showReviewContent
+    review = $userobject.showReviewContent
+    if review == []
+      $prompt.error("You have no reviews yet")
+      return "main_menu"
+    end
     "main_menu"
   elsif option == "Edit a review"
     review = $userobject.showReviews
-    response = $prompt.select("Which review would you like to delete?", review.map(&:reviewsDisplayed))
+    if review == []
+      $prompt.error("You have no reviews yet")
+      return "main_menu"
+    end
+    response = $prompt.select("Which review would you like to edit?", review.map(&:reviewsDisplayed).push("Back"))
+    if response == "Back"
+      return "user_review_menu"
+    end
     editedReview = $prompt.collect do
       key(:newDescription).ask("What is the new description you want to assign?")
       key(:newRating).select("What is the amended rating (1-5)?", %w(1 2 3 4 5), convert: :int)
     end
     editedReview[:id] = response.split("\n")[0].to_i
-    binding.pry
     $userobject.editReview(editedReview)
     "main_menu"
   elsif option == "Delete a review"
     review = $userobject.showReviews
-    response = $prompt.select("Which review would you like to delete?", review.map(&:reviewsDisplayed))
+    if review == []
+      $prompt.error("You have no reviews yet")
+      return "main_menu"
+    end
+    response = $prompt.select("Which review would you like to delete?", review.map(&:reviewsDisplayed).push("Back"))
+    if response == "Back"
+      return "user_review_menu"
+    end
     $userobject.deleteReview(response.split("\n")[0].to_i)
     "main_menu"
   elsif option == "Back to main menu"

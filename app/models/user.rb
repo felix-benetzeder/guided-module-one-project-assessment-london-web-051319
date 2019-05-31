@@ -51,28 +51,31 @@ class User < ActiveRecord::Base
       book_to_be_reviewed = Book.find_by_title(title)
       bookID = book_to_be_reviewed.id
       new_rating = Review.create(description: description, rating: rating, book_id: bookID, user_id: self.id, date: Date.today)
+      $userobject = User.find_by(id: $userobject.id)
       puts "Added review, thanks for your contribution"
     end
   end
 
   def editReview(id:, newDescription:, newRating:)
-    if Review.all.find_by(id: id) == nil || self.username != Review.all.find_by(id: id).user.username
-      puts "Please only select valid ID numbers and reviews that you created yourself."
-    else
+    # if Review.all.find_by(id: id) == nil || self.username != Review.all.find_by(id: id).user.username
+    #   puts "Please only select valid ID numbers and reviews that you created yourself."
+    # else
       updatingReview = Review.all.find_by(id: id)
       updatingReview.update(description: newDescription, rating: newRating)
-      puts "Successfully edited Review, please restart to see changes."
-    end
+      $userobject = User.find_by(id: $userobject.id)
+      puts "Successfully edited review"
+    # end
   end
 
   def deleteReview(id)
-    if Review.all.find_by(id: id) == nil || self.username != Review.all.find_by(id: id).user.username
-      puts "Please only select valid ID numbers and reviews that you created yourself."
-    else
+    # if Review.all.find_by(id: id) == nil || self.username != Review.all.find_by(id: id).user.username
+    #   puts "Please only select valid ID numbers and reviews that you created yourself."
+    # else
       deletingReview = Review.all.find_by(id: id)
       deletingReview.destroy
+      $userobject = User.find_by(id: $userobject.id)
       puts "Successfully deleted review"
-    end
+    # end
   end
 
   def self.createBook(title:, author:, genre:, pages:)
@@ -80,6 +83,7 @@ class User < ActiveRecord::Base
       puts "Please enter a valid value or unique title"
     else
       Book.create(title: title, author: author, genre: genre, pages: pages)
+      puts "Successfully added book."
     end
   end
 

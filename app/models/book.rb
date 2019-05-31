@@ -33,13 +33,13 @@ class Book < ActiveRecord::Base
     @quantity.to_i.times{ print "\u{2B50} "}
     if difference > 0 && difference <= 0.25
       fraction = "1/4"
-      puts fraction
+      print fraction
     elsif difference > 0.26 && difference <= 0.34
       fraction = "1/3"
       puts fraction
     elsif difference > 0.35 && difference <= 0.5
       fraction = "1/2"
-      puts fraction
+      print fraction
     elsif difference > 0.5 && difference <= 0.67
       fraction = "2/3"
       puts fraction

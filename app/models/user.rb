@@ -35,7 +35,7 @@ class User < ActiveRecord::Base
 
   def self.createUser(username:, full_name:)
     if User.all.map(&:username).include?(username) || username == nil || full_name == nil
-      puts "This username is already taken or invalid - please select a different one"
+      $prompt.warn("This username is already taken or invalid - please select a different one")
       "Error"
     else
       User.create(username: username, full_name: full_name)
@@ -47,7 +47,7 @@ class User < ActiveRecord::Base
       puts "Login successful"
       "Success"
     else
-      puts "This user does not exist, please enter a valid username"
+      $prompt.warn("This user does not exist, please enter a valid username")
     end
   end
 
@@ -87,7 +87,7 @@ class User < ActiveRecord::Base
 
   def self.createBook(title:, author:, genre:, pages:)
     if Book.all.map(&:title).include?(title) || title == nil || author == nil || genre == nil || pages == nil
-      puts "Please enter a valid value or unique title"
+      $prompt.error("Please enter a valid value or unique title")
     else
       Book.create(title: title, author: author, genre: genre, pages: pages)
       puts "Successfully added book."
